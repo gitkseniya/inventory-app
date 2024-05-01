@@ -1,30 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-
-type InventoryItem = {
-  id: number;
-  serial: string;
-  name: string;
-  description: string;
-  quantity: number;
-  created_at: Date;
-};
+import React, { useEffect } from 'react';
+import { useItems } from '../hooks/useItems';
 
 const InventoryList: React.FC = () => {
-  const [items, setItems] = useState<InventoryItem[]>([]);
+  const { items, fetchItems, deleteItem } = useItems([]);
 
   useEffect(() => {
-    const fetchItems = async () => {
-      try {
-        const response = await axios.get('http://localhost:4000/api/items');
-        setItems(response.data);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
-
     fetchItems();
-  }, []);
+  }, [fetchItems]);
 
   return (
     <div className="container mx-auto mt-10">
@@ -50,7 +32,7 @@ const InventoryList: React.FC = () => {
               <td className="px-4 py-2">{new Date(item.created_at).toLocaleDateString()}</td>
               <td className="px-4 py-2">
                 <button className="text-blue-500 hover:text-blue-700 px-2 py-1">Edit</button>
-                <button className="text-red-500 hover:text-red-700 px-2 py-1">Delete</button>
+                <button className="text-red-500 hover:text-red-700 px-2 py-1" onClick={() => deleteItem(item.id)}>Delete</button>
               </td>
             </tr>
           ))}
