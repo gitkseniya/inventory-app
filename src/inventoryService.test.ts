@@ -16,8 +16,8 @@ describe('Inventory Service', () => {
     (pool.query as jest.Mock).mockResolvedValue({ rows: mockItems });
 
     const result = await findAllItems();
-    expect(result.rows).toEqual(mockItems);  // Change this line
-    expect(pool.query).toHaveBeenCalledWith("SELECT * FROM inventory");
+    expect(result.rows).toEqual(mockItems);
+    expect(pool.query).toHaveBeenCalledWith("SELECT * FROM items");
 });
 
   test('createItem inserts a new item and returns it', async () => {
@@ -25,7 +25,7 @@ describe('Inventory Service', () => {
     (pool.query as jest.Mock).mockResolvedValue({ rows: [newItem] });
 
     const result = await createItem(newItem.serial, newItem.name, newItem.description, newItem.quantity, newItem.created_at);
-    expect(result.rows[0]).toEqual(newItem); // Check the first element of the array
+    expect(result.rows[0]).toEqual(newItem);
     expect(pool.query).toHaveBeenCalled();
   });
 
@@ -45,6 +45,6 @@ describe('Inventory Service', () => {
 
     const result = await deleteItem(deletedItem.id);
     expect(result.rows[0]).toEqual(deletedItem);
-    expect(pool.query).toHaveBeenCalledWith("DELETE FROM inventory WHERE id = $1 RETURNING *", [deletedItem.id]);
+    expect(pool.query).toHaveBeenCalledWith("DELETE FROM items WHERE id = $1 RETURNING *", [deletedItem.id]);
   });
 });
