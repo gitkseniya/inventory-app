@@ -1,9 +1,9 @@
 {
   "development": {
     "username": "superuser",
-    "password": 123,
+    "password": "123",
     "database": "inventory_db",
-    "host": "127.0.0.1",
+    "host": "db",
     "dialect": "postgres"
   },
   "test": {

@@ -1,0 +1,40 @@
+version: '3.8'
+services:
+  db:
+    image: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: inventory_db
+      POSTGRES_USER: superuser
+      POSTGRES_PASSWORD: 123
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD", "pg_isready", "-q", "-d", "inventory_db", "-U", "superuser"]
+      interval: 10s
+      retries: 5
+      timeout: 5s
+  
+  backend:
+    build: .
+    ports:
+      - "4000:4000"
+    environment:
+      DATABASE_URL: postgres://superuser:123@db:5432/inventory_db
+    command: ./init.sh
+    depends_on:
+      db:
+        condition: service_healthy
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "8000:8000"
+    environment:
+      REACT_APP_BACKEND_URL: http://localhost:4000
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
