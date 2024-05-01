@@ -3,10 +3,11 @@ import { useItems } from '../hooks/useItems';
 
 interface NewItemModalProps {
     onItemCreated: () => void;
+    onCancel: () => void;
   }
   
 
-  const NewItemModal: React.FC<NewItemModalProps> = ({ onItemCreated }) => {
+  const NewItemModal: React.FC<NewItemModalProps> = ({ onItemCreated, onCancel }) => {
   const { createItem } = useItems();
   const [newItemData, setNewItemData] = useState({
     name: "",
@@ -76,7 +77,7 @@ interface NewItemModalProps {
             />
 
           <button type="submit" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Add New Item</button>
-          <button type="button" onClick={() => onItemCreated()} className="ml-4 bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">Cancel</button>
+          <button type="button" onClick={onCancel} className="ml-4 bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">Cancel</button>
         </form>
       </div>
     </div>

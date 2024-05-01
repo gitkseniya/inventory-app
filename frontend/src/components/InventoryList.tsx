@@ -58,6 +58,10 @@ const InventoryList: React.FC = () => {
     setShowModal(false);
   };
 
+  const handleCancel = () => {
+    setShowModal(false);
+  };
+
   const saveChanges = async () => {
     if (editFormData) {
       await editItem(editFormData);
@@ -80,7 +84,7 @@ const InventoryList: React.FC = () => {
       >
         Add New Item
       </button>
-      {showModal && <NewItemModal onItemCreated={onItemCreated} />}
+      {showModal && <NewItemModal onItemCreated={onItemCreated} onCancel={handleCancel} />}
       <table className="table-auto w-full">
         <thead>
           <tr className="bg-gray-200 text-left">
