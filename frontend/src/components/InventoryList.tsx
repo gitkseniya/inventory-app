@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { InventoryItem, useItems } from '../hooks/useItems';
 import NewItemModal from './NewItemModal'; 
+import { faker } from '@faker-js/faker';
 
 const InventoryList: React.FC = () => {
   const { items, fetchItems, deleteItem, editItem, createItem } = useItems();
@@ -70,6 +71,25 @@ const InventoryList: React.FC = () => {
     }
   };
 
+  const createRandomItem = async () => {
+
+    const randomSerialNumber = "S" + faker.random.numeric(5)
+    const randomName = faker.commerce.product()
+    const randomDescription = faker.commerce.productDescription()
+    const randomQuantity = faker.number.int(100)
+
+    const randomItemData = {
+        "serial": randomSerialNumber,
+        "name": randomName,
+        "description": randomDescription,
+        "quantity": randomQuantity,
+        "created_at": new Date()
+    }
+
+    console.log("I was clicked!", randomSerialNumber, randomName, randomDescription, randomQuantity)
+    await createItem(randomItemData);
+  }
+
   const cancelEdit = () => {
     setEditingId(null);
     setEditFormData(null);
@@ -83,6 +103,13 @@ const InventoryList: React.FC = () => {
         className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out mb-4"
       >
         Add New Item
+      </button>
+
+      <button
+        onClick={() => createRandomItem()}
+        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out mb-4"
+      >
+        Add Random Item
       </button>
       {showModal && <NewItemModal onItemCreated={onItemCreated} onCancel={handleCancel} />}
       <table className="table-auto w-full">
