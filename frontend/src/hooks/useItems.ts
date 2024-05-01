@@ -2,7 +2,7 @@ import axios from 'axios';
 import { useState, useCallback } from 'react';
 
 export type InventoryItem = {
-  id: number;
+  id?: number | null;
   serial: string;
   name: string;
   description: string;
@@ -23,13 +23,11 @@ export const useItems = () => {
   }, []);
 
   const deleteItem = async (itemId: number) => {
-    if (window.confirm("Are you sure you want to delete this item?")) {
-      try {
+    try {
         await axios.delete(`http://localhost:4000/api/items/${itemId}`);
         setItems(currentItems => currentItems.filter(item => item.id !== itemId));
       } catch (error) {
         console.error('Failed to delete the item:', error);
-      }
     }
   };
 
@@ -42,5 +40,14 @@ export const useItems = () => {
     }
   };
 
-  return { items, fetchItems, deleteItem, editItem };
+  const createItem = async (newItem: InventoryItem) => {
+    try {
+        const response = await axios.post('http://localhost:4000/api/items', newItem);
+        setItems(prevItems => [...prevItems, response.data]); // Assuming response.data is the new item returned by the server with an ID
+    } catch (error) {
+        console.error('Failed to create the item:', error);
+    }
+  };
+
+  return { items, fetchItems, deleteItem, editItem, createItem };
 };

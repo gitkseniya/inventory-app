@@ -1,25 +1,61 @@
 import React, { useEffect, useState } from 'react';
 import { InventoryItem, useItems } from '../hooks/useItems';
+import NewItemModal from './NewItemModal'; 
 
 const InventoryList: React.FC = () => {
-  const { items, fetchItems, deleteItem, editItem } = useItems();
+  const { items, fetchItems, deleteItem, editItem, createItem } = useItems();
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editFormData, setEditFormData] = useState<InventoryItem | null>(null);
+  const [showModal, setShowModal] = useState(false);
+
+  
+  const [newItemData, setNewItemData] = useState<Omit<InventoryItem, 'id'>>({
+  name: "",
+  description: "",
+  serial: "",
+  quantity: 1,
+  created_at: new Date()
+});
 
   useEffect(() => {
     fetchItems();
   }, [fetchItems]);
 
   const handleEditClick = (item: InventoryItem) => {
-    setEditingId(item.id);
-    setEditFormData(item);
+    if (item.id != null) { 
+      setEditingId(item.id);
+      setEditFormData(item);
+    } else {
+      console.error("Attempted to edit item without a valid ID");
+    }
   };
-
+  
+  const handleDelete = async (item: InventoryItem) => {
+    if (item.id == null) {
+      console.error("Attempted to delete an item without a valid ID.");
+      return;
+    }
+  
+    if (window.confirm("Are you sure you want to delete this item?")) {
+      try {
+        await deleteItem(item.id);
+        fetchItems();
+      } catch (error) {
+        console.error('Failed to delete the item:', error);
+      }
+    }
+  };
+  
   const handleFieldChange = (e: React.ChangeEvent<HTMLInputElement>, field: keyof InventoryItem) => {
     setEditFormData({
       ...editFormData!,
       [field]: field === 'quantity' ? parseInt(e.target.value, 10) : e.target.value
     });
+  };
+
+  const onItemCreated = () => {
+    fetchItems();
+    setShowModal(false);
   };
 
   const saveChanges = async () => {
@@ -36,8 +72,15 @@ const InventoryList: React.FC = () => {
   };
 
   return (
-    <div className="container mx-auto mt-10">
+    <div className="container mx-auto mt-10 flex flex-col items-start">
       <h1 className="text-xl font-bold mb-5">Inventory Items</h1>
+      <button
+        onClick={() => setShowModal(true)}
+        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out mb-4"
+      >
+        Add New Item
+      </button>
+      {showModal && <NewItemModal onItemCreated={onItemCreated} />}
       <table className="table-auto w-full">
         <thead>
           <tr className="bg-gray-200 text-left">
@@ -73,7 +116,7 @@ const InventoryList: React.FC = () => {
                   <td className="px-4 py-2">{new Date(item.created_at).toLocaleDateString()}</td>
                   <td className="px-4 py-2">
                     <button className="text-blue-500 hover:text-blue-700 px-2 py-1" onClick={() => handleEditClick(item)}>Edit</button>
-                    <button className="text-red-500 hover:text-red-700 px-2 py-1" onClick={() => deleteItem(item.id)}>Delete</button>
+                    <button className="text-red-500 hover:text-red-700 px-2 py-1" onClick={() => handleDelete(item)}>Delete</button>
                   </td>
                 </>
               )}
