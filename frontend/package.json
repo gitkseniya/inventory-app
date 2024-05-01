@@ -45,6 +45,7 @@
     ]
   },
   "devDependencies": {
+    "@faker-js/faker": "^8.4.1",
     "@types/jest": "^29.5.12",
     "@types/react-router-dom": "^5.3.3",
     "@types/supertest": "^6.0.2",
